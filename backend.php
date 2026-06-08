@@ -5,7 +5,7 @@ class Database {
     public $hostname = "localhost";
     public $username = "root";
     public $password = "";
-    public $database = "sandbox1";
+    public $database = "eindproject";
     public $conn;
 
     public function connect() {
@@ -18,22 +18,32 @@ class Database {
         // else {
         //     echo "Connected successfully";
         // }
-
-        
         return $this->conn;
     }
 
+
 public function trigger()
 {
-    if (
-        isset($_GET['pagina']) &&
-        file_exists($_GET['pagina'] . '.php')
-    ) {
-        include $_GET['pagina'] . '.php';
+    if (!isset($_GET['pagina'])) {
+        include "frontend.php";
+        return;
+    }
+
+    if (file_exists($_GET['pagina'] . ".php")) {
+        include $_GET['pagina'] . ".php";
     } else {
-        include '404.php';
+        include "404.php";
     }
 }
-
+// {
+//     if (
+//         isset($_GET['pagina']) &&
+//         file_exists($_GET['pagina'] . '.php')
+//     ) {
+//         include $_GET['pagina'] . '.php';
+//     } else {
+//         include '404.php';
+//     }
+// }
 }
 ?>
