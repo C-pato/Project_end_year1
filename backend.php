@@ -22,5 +22,18 @@ class Database {
         
         return $this->conn;
     }
+
+public function trigger()
+{
+    if (
+        isset($_GET['pagina']) &&
+        file_exists($_GET['pagina'] . '.php')
+    ) {
+        include $_GET['pagina'] . '.php';
+    } else {
+        include '404.php';
+    }
+}
+
 }
 ?>
