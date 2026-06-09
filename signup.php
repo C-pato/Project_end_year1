@@ -54,7 +54,7 @@
 
                 <button
                     class="back-btn"
-                    onclick="window.location='index.html'">
+                    onclick="window.location='index.php'">
                     Back to Login
                 </button>
             </div>

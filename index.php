@@ -1,3 +1,34 @@
+<?php
+require_once 'backend.php';
+require_once 'user.php';
+
+$user = new User();
+$user->connect();
+
+$error = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Temporary login check
+    if ($username == "admin" && $password == "1234") {
+
+        header("Location: frontend.php");
+        exit();
+
+    } else {
+
+        $error = "Invalid username or password.";
+
+    }
+
+
+    
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +50,11 @@
 
                 <h1>Welcome!</h1>
 
-                <p id="error" class="error" style="display:none;"></p>
+                <?php if (!empty($error)): ?>
+                    <p class="error"><?php echo $error; ?></p>
+                <?php endif; ?>
                 
-                <form>
+                <form method="post">
 
                     <input
                         type="text"
@@ -46,7 +79,7 @@
 
                 <button
                     class="signup-btn"
-                    onclick="window.location='signup.html'">
+                    onclick="window.location='signup.php'">
                     Create Account
                 </button>
             </div>
@@ -55,5 +88,15 @@
         <footer class="site-footer">
             Student Management System © 2026
         </footer>
+
+
+
+    <div>
+        <div id="home"><a  href="index.php?pagina=404" style="color: white;" >  </a> </div> 
+        <div id="home"><a  href="index.php?pagina=frontend" style="color: white;" >  </a> </div> 
+        <div id="home"><a  href="index.php?pagina=pages" style="color: white;" > Uitloggen </a> </div>
+        <div id="home"><a  href="index.php?pagina=user" style="color: white;" > Uitloggen </a> </div>  
+        <div id="home"><a  href="index.php?pagina=backend" style="color: white;" > Uitloggen </a> </div>  
+    </div>
 </body>
 </html>

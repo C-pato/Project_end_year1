@@ -26,13 +26,13 @@ body {
 }
 
 .board-container {
-    width: 350px;
+    width: 800px;
+    max-width: 95%;
     padding: 35px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-    text-align: center;
 }
 
 h1 {
@@ -133,4 +133,26 @@ button {
 
 .signup-btn:hover {
     transform: translateY(-2px);
+}
+
+.student-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: white;
+}
+
+.student-table th,
+.student-table td {
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.3);
+    text-align: left;
+}
+
+.student-table th {
+    background: rgba(255,255,255,0.15);
+}
+
+.student-table tr:nth-child(even) {
+    background: rgba(255,255,255,0.05);
 }
