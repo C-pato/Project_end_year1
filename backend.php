@@ -1,7 +1,7 @@
 <?php
 
 class Database {
-
+// connection
     public $hostname = "localhost";
     public $username = "root";
     public $password = "";
@@ -21,7 +21,7 @@ class Database {
         return $this->conn;
     }
 
-
+// pages
 public function trigger()
 {
     if (!isset($_GET['pagina'])) {
@@ -45,5 +45,15 @@ public function trigger()
 //         include '404.php';
 //     }
 // }
+
+
+
+public function read()
+{
+    $sql = "SELECT id, voornaam, achternaam FROM studenten";
+    $result = mysqli_query($this->conn, $sql);
+
+    return $result;
+}
 }
 ?>
