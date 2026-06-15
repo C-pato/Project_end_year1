@@ -10,7 +10,7 @@ class Database {
 
     public function connect() {
         $this->conn = mysqli_connect($this->hostname, $this->username, $this->password, $this->database);
-        
+            
                 
         if (!$this->conn) {
             die("Connection failed: " . mysqli_connect_error());
@@ -48,12 +48,6 @@ public function trigger()
 
 
 
-public function read()
-{
-    $sql = "SELECT id, voornaam, achternaam FROM studenten";
-    $result = mysqli_query($this->conn, $sql);
 
-    return $result;
-}
 }
 ?>
