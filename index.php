@@ -1,5 +1,5 @@
 <?php
-require_once 'backend.php';
+require_once 'database.php';
 require_once 'user.php';
 
 $user = new User();
@@ -7,25 +7,17 @@ $user->connect();
 
 $error = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $username = $_POST['username'];
+    $naam = $_POST['naam'];
     $password = $_POST['password'];
 
-    // Temporary login check
-    if ($username == "admin" && $password == "1234") {
-
+    if ($user->login($naam, $password)) {
         header("Location: frontend.php");
-        exit();
-
+        exit;
     } else {
-
-        $error = "Invalid username or password.";
-
+        $error = "Onjuist naam of wachtwoord.";
     }
-
-
-    
 }
 ?>
 
@@ -44,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </header>
 
-        <div class="page-center">
+        <div class="page-center-auth">
 
             <div class="auth-container">
 
@@ -53,12 +45,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php if (!empty($error)): ?>
                     <p class="error"><?php echo $error; ?></p>
                 <?php endif; ?>
-                
+
                 <form method="post">
 
                     <input
                         type="text"
-                        name="username"
+                        name="naam"
                         placeholder="Username"
                         required
                     >
@@ -85,6 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
 
+
         <footer class="site-footer">
             Student Management System © 2026
         </footer>
@@ -92,11 +85,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     <div>
-        <div id="home"><a  href="index.php?pagina=404" style="color: white;" >  </a> </div> 
+        <!-- <div id="home"><a  href="index.php?pagina=404" style="color: white;" >  </a> </div> 
         <div id="home"><a  href="index.php?pagina=frontend" style="color: white;" >  </a> </div> 
         <div id="home"><a  href="index.php?pagina=pages" style="color: white;" > Uitloggen </a> </div>
         <div id="home"><a  href="index.php?pagina=user" style="color: white;" > Uitloggen </a> </div>  
-        <div id="home"><a  href="index.php?pagina=backend" style="color: white;" > Uitloggen </a> </div>  
+        <div id="home"><a  href="index.php?pagina=backend" style="color: white;" > Uitloggen </a> </div>   -->
     </div>
 </body>
 </html>

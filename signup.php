@@ -13,14 +13,14 @@
             </div>
         </header>
 
-        <div class="page-center">
+        <div class="page-center-auth">
 
             <div class="auth-container">
 
                 <h1>Sign Up!</h1>
 
                 <p id="error" class="error" style="display:none;"></p>
-                
+
                 <form>
 
                     <input
