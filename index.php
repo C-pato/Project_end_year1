@@ -8,7 +8,20 @@ require_once 'database.php';
 $db = new Database();
 $conn = $db->connect();
 
-$sql = "SELECT id, voornaam, achternaam, klas FROM studenten";
+$selectedClass = $_GET['klas'] ?? 'all';
+
+$where = "";
+
+if ($selectedClass !== 'all') {
+    $selectedClass = mysqli_real_escape_string($conn, $selectedClass);
+    $where = "WHERE klas = '$selectedClass'";
+}
+
+function activeClass($class, $selected) {
+    return $class === $selected ? "background: rgba(255,255,255,0.25);" : "";
+}
+
+$sql = "SELECT id, voornaam, achternaam, klas FROM studenten $where";
 $result = mysqli_query($conn, $sql);
 
 $error = "";
@@ -49,6 +62,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
 </head>
 <body>
     <header class="site-header">
+        <div class="header-left">
+            <?php if (
+                isset($_SESSION['role']) &&
+                ($_SESSION['role'] === 'moderator' || $_SESSION['role'] === 'admin')
+            ): ?>
+                <button
+                    class="nav-btn"
+                    onclick="window.location='teachers.php'">
+                    Teachers
+                </button>
+            <?php endif; ?>
+        </div>
+
         <div class="site-title">
             Student Management System
         </div>
@@ -56,14 +82,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
         <div class="nav-buttons">
 
             <?php if (!isset($_SESSION['user_id'])): ?>
+                <div class="nav-dropdown">
+                    <button class="nav-btn dropdown-toggle" onclick="toggleDropdown()">
+                        Account ▾
+                    </button>
 
-                <button class="nav-btn" onclick="window.location='login.php'">
-                    Login
-                </button>
-
-                <button class="nav-btn signup-nav-btn" onclick="window.location='signup.php'">
-                    Sign Up
-                </button>
+                    <div id="dropdown-menu" class="dropdown-menu">
+                        <button onclick="window.location='login.php'">Login</button>
+                        <button onclick="window.location='signup.php'">Sign Up</button>
+                    </div>
+                </div>
 
             <?php else: ?>
 
@@ -82,6 +110,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
 
             <div class="board-container">
 
+                <div class="class-filter">
+                    <button class="nav-btn" style="<?= activeClass('all', $selectedClass) ?>"
+                    onclick="window.location='index.php?klas=all'">
+                        All classes
+                    </button>
+
+                    <button class="nav-btn" style="<?= activeClass('SD1A', $selectedClass) ?>"
+                    onclick="window.location='index.php?klas=SD1A'">
+                        SD1A
+                    </button>
+
+                    <button class="nav-btn" style="<?= activeClass('SD1B', $selectedClass) ?>"
+                    onclick="window.location='index.php?klas=SD1B'">
+                        SD1B
+                    </button>
+                </div>
+
                 <div class="student-header">
                     <h1>Student list</h1>  
                     <?php if (isset($_SESSION['role'])): ?>
@@ -95,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
                         <th>Achternaam</th>
                         <th>Klas</th>
                         <?php if ($userRole !== 'gebruiker'): ?>
-                            <th>Bewerken</th>
+                            <th>edit</th>
                         <?php endif; ?>
                     </tr>
 
@@ -107,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
                             <td><?php echo htmlspecialchars($row['klas'] ?? ''); ?></td>
                             <?php if ($userRole !== 'gebruiker'): ?>
                                 <td>
-                                    <a class='action-btn' href="bewerken.php?id=<?php echo $row['id']; ?>">Bewerk</a>
+                                    <a class='action-btn' href="bewerken.php?id=<?php echo $row['id']; ?>">Edit</a>
                                 </td>
                             <?php endif; ?>
                         </tr>
@@ -149,6 +194,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
                     form.style.display = 'block';
                 } else {
                     form.style.display = 'none';
+                }
+            }
+
+            function toggleDropdown() {
+                const menu = document.getElementById("dropdown-menu");
+                menu.classList.toggle("show");
+            }
+
+            window.onclick = function(event) {
+                if (!event.target.matches('.dropdown-toggle')) {
+                    const menu = document.getElementById("dropdown-menu");
+                    if (menu) menu.classList.remove("show");
                 }
             }
         </script>
