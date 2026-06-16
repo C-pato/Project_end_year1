@@ -1,41 +1,43 @@
 <?php
 
-class Database {
-// connection
+class Database
+{
+    // connection
     public $hostname = "localhost";
     public $username = "root";
     public $password = "";
     public $database = "eindproject";
     public $conn;
 
-    public function connect() {
+    public function connect()
+    {
         $this->conn = mysqli_connect($this->hostname, $this->username, $this->password, $this->database);
-            
-                
+
+
         if (!$this->conn) {
             die("Connection failed: " . mysqli_connect_error());
-        } 
+        }
         // else {
         //     echo "Connected successfully";
         // }
         return $this->conn;
     }
 
-// pages
-public function trigger()
-{
-    if (!isset($_GET['pagina'])) {
-        include "frontend.php";
-        return;
-    }
+    // pages
+    public function trigger()
+    {
+        if (!isset($_GET['pagina'])) {
+            include "frontend.php";
+            return;
+        }
 
-    if (file_exists($_GET['pagina'] . ".php")) {
-        include $_GET['pagina'] . ".php";
-    } else {
-        include "404.php";
+        if (file_exists($_GET['pagina'] . ".php")) {
+            include $_GET['pagina'] . ".php";
+        } else {
+            include "404.php";
+        }
     }
-}
-// {
+    // {
 //     if (
 //         isset($_GET['pagina']) &&
 //         file_exists($_GET['pagina'] . '.php')
