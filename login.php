@@ -2,44 +2,35 @@
 require_once 'database.php';
 require_once 'user.php';
 
-$user = new user();
+$user = new User();
 $user->connect();
 
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $confirmPassword = $_POST['confirmPassword'] ?? '';
 
-    if (empty($username)) {
-        $error = "Username cannot be empty!";
-    } elseif ($user->usernameExists($username)) {
-        $error = "Username already exists!";
-    } elseif ($password !== $confirmPassword) {
-        $error = "Passwords do not match!";
-    } elseif (strlen($password) < 6) {
-        $error = "Password must be at least 6 characters!";
+    $naam = $_POST['naam'];
+    $password = $_POST['password'];
+
+    if ($user->login($naam, $password)) {
+        header("Location: index.php");
+        exit;
     } else {
-        $result = $user->add($username, '', $password);
-        if (strpos($result, 'successfully') !== false) {
-            header("Location: login.php");
-            exit;
-        } else {
-            $error = "Error creating account. Please try again.";
-        }
+        $error = "Onjuist naam of wachtwoord.";
     }
 }
 ?>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sign up</title>
+    <title>Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="signup-page">
-            <header class="site-header">
+<body class="login-page">
+        <header class="site-header">
             <div class="site-title">
                 Student Management System
             </div>
@@ -49,17 +40,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <div class="auth-container">
 
-                <h1>Sign Up!</h1>
+                <h1>Welcome!</h1>
 
                 <?php if (!empty($error)): ?>
-                    <p class="error"><?php echo htmlspecialchars($error); ?></p>
+                    <p class="error"><?php echo $error; ?></p>
                 <?php endif; ?>
 
                 <form method="post">
 
                     <input
                         type="text"
-                        name="username"
+                        name="naam"
                         placeholder="Username"
                         required
                     >
@@ -71,28 +62,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         required
                     >
 
-                    <input
-                        type="password"
-                        name="confirmPassword"
-                        placeholder="Confirm Password"
-                        required
-                    >
-
                     <button
                         class="login-btn"
                         type="submit">
-                        Sign Up
+                        Log In
                     </button>
-
                 </form>
 
                 <button
+                    class="signup-btn"
+                    onclick="window.location='signup.php'">
+                    Create Account
+                </button>
+
+                <button
                     class="back-btn"
-                    onclick="window.location='login.php'">
-                    Back to Login
+                    onclick="window.location='index.php'">
+                    Continue as Guest
                 </button>
             </div>
         </div>
+
 
         <footer class="site-footer">
             Student Management System © 2026

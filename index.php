@@ -1,22 +1,40 @@
 <?php
-require_once 'database.php';
-require_once 'user.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-$user = new User();
-$user->connect();
+require_once 'database.php';
+
+$db = new Database();
+$conn = $db->connect();
+
+$sql = "SELECT id, voornaam, achternaam, klas FROM studenten";
+$result = mysqli_query($conn, $sql);
 
 $error = "";
+$success = "";
+$userRole = $_SESSION['role'] ?? 'gebruiker';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-    $naam = $_POST['naam'];
-    $password = $_POST['password'];
-
-    if ($user->login($naam, $password)) {
-        header("Location: frontend.php");
-        exit;
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
+    $id = intval($_POST['id']);
+    $voornaam = mysqli_real_escape_string($conn, $_POST['voornaam']);
+    $achternaam = mysqli_real_escape_string($conn, $_POST['achternaam']);
+    $klas = mysqli_real_escape_string($conn, $_POST['klas']);
+    
+    $check_sql = "SELECT id FROM studenten WHERE id = $id";
+    $check_result = mysqli_query($conn, $check_sql);
+    
+    if (mysqli_num_rows($check_result) > 0) {
+        $error = "ID already exists!";
     } else {
-        $error = "Onjuist naam of wachtwoord.";
+        $insert_sql = "INSERT INTO studenten (id, voornaam, achternaam, klas) VALUES ($id, '$voornaam', '$achternaam', '$klas')";
+        if (mysqli_query($conn, $insert_sql)) {
+            $success = "Student added successfully!";
+            // Refresh the result
+            $result = mysqli_query($conn, $sql);
+        } else {
+            $error = "Error adding student: " . mysqli_error($conn);
+        }
     }
 }
 ?>
@@ -26,70 +44,118 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-        <header class="site-header">
-            <div class="site-title">
-                Student Management System
-            </div>
-        </header>
+    <header class="site-header">
+        <div class="site-title">
+            Student Management System
+        </div>
 
-        <div class="page-center-auth">
+        <div class="nav-buttons">
 
-            <div class="auth-container">
+            <?php if (!isset($_SESSION['user_id'])): ?>
 
-                <h1>Welcome!</h1>
+                <button class="nav-btn" onclick="window.location='login.php'">
+                    Login
+                </button>
 
-                <?php if (!empty($error)): ?>
-                    <p class="error"><?php echo $error; ?></p>
-                <?php endif; ?>
+                <button class="nav-btn signup-nav-btn" onclick="window.location='signup.php'">
+                    Sign Up
+                </button>
 
-                <form method="post">
-
-                    <input
-                        type="text"
-                        name="naam"
-                        placeholder="Username"
-                        required
-                    >
-
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        required
-                    >
-
-                    <button
-                        class="login-btn"
-                        type="submit">
-                        Log In
-                    </button>
-                </form>
+            <?php else: ?>
 
                 <button
-                    class="signup-btn"
-                    onclick="window.location='signup.php'">
-                    Create Account
+                    class="nav-btn"
+                    onclick="window.location='logout.php'">
+                    Logout
                 </button>
-            </div>
+
+            <?php endif; ?>
+
         </div>
+    </header>
+
+        <div class="page-center">
+
+            <div class="board-container">
+
+                <div class="student-header">
+                    <h1>Student list</h1>  
+                    <?php if (isset($_SESSION['role'])): ?>
+                    <?php endif; ?>
+                </div>
+
+                <table class="student-table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Voornaam</th>
+                        <th>Achternaam</th>
+                        <th>Klas</th>
+                        <?php if ($userRole !== 'gebruiker'): ?>
+                            <th>Bewerken</th>
+                        <?php endif; ?>
+                    </tr>
+
+                    <?php while($row = mysqli_fetch_assoc($result)): ?>
+                        <tr>
+                            <td><?php echo $row['id']; ?></td>
+                            <td><?php echo htmlspecialchars($row['voornaam'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($row['achternaam'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($row['klas'] ?? ''); ?></td>
+                            <?php if ($userRole !== 'gebruiker'): ?>
+                                <td>
+                                    <a class='action-btn' href="bewerken.php?id=<?php echo $row['id']; ?>">Bewerk</a>
+                                </td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endwhile; ?>
+                </table>
+
+                <div class="add-student-section">
+                    <?php if ($userRole !== 'gebruiker'): ?>
+                        <button class="add-student-btn" onclick="toggleAddForm()">+ Add Student</button>
+                    <?php endif; ?>
+                    
+                    <?php if ($userRole !== 'gebruiker'): ?>
+                    <form id="add-form" method="post" style="display: none; margin-top: 20px; padding: 20px; border: 2px dashed rgba(255,255,255,0.5); border-radius: 10px;">
+                        <?php if (!empty($error)): ?>
+                            <p class="error"><?php echo htmlspecialchars($error); ?></p>
+                        <?php endif; ?>
+                        <?php if (!empty($success)): ?>
+                            <p class="success"><?php echo htmlspecialchars($success); ?></p>
+                        <?php endif; ?>
+                        
+                        <input type="text" name="id" placeholder="Student ID" required>
+                        <input type="text" name="voornaam" placeholder="First Name" required>
+                        <input type="text" name="achternaam" placeholder="Last Name" required>
+                        <input type="text" name="klas" placeholder="Klas" required>
+                        
+                        <button type="submit" name="add_student" class="login-btn" style="margin-top: 10px;">Add Student</button>
+                        <button type="button" class="back-btn" onclick="toggleAddForm()" style="margin-top: 10px;">Cancel</button>
+                    </form>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            function toggleAddForm() {
+                var form = document.getElementById('add-form');
+                if (form.style.display === 'none') {
+                    form.style.display = 'block';
+                } else {
+                    form.style.display = 'none';
+                }
+            }
+        </script>
 
 
         <footer class="site-footer">
             Student Management System © 2026
         </footer>
-
-
-
-    <div>
-        <!-- <div id="home"><a  href="index.php?pagina=404" style="color: white;" >  </a> </div> 
-        <div id="home"><a  href="index.php?pagina=frontend" style="color: white;" >  </a> </div> 
-        <div id="home"><a  href="index.php?pagina=pages" style="color: white;" > Uitloggen </a> </div>
-        <div id="home"><a  href="index.php?pagina=user" style="color: white;" > Uitloggen </a> </div>  
-        <div id="home"><a  href="index.php?pagina=backend" style="color: white;" > Uitloggen </a> </div>   -->
-    </div>
 </body>
 </html>

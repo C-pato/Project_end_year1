@@ -20,8 +20,8 @@ class user extends Database {
 
     // DELETE
 
-    public function delete($name, $email, $password) {
-        $sql = "DELETE FROM users WHERE naam = '$name' AND email = '$email' AND wachtwoord = '$password'";
+    public function delete($id, $voornaam, $achternaam, $klas) {
+        $sql = "DELETE FROM studenten WHERE id = '$id' AND voornaam = '$voornaam' AND achternaam = '$achternaam' AND klas = '$klas'";
 
         if (mysqli_query($this->conn, $sql)) {
             return "Record deleted successfully";
@@ -31,8 +31,8 @@ class user extends Database {
     }
 
    // UPDATE 
-    public function update($name, $email, $password) {
-        $sql = "UPDATE users SET wachtwoord = '$password' WHERE naam = '$name' AND email = '$email'";
+    public function update($id, $voornaam, $achternaam, $klas) {
+        $sql = "UPDATE studenten SET voornaam = '$voornaam', achternaam = '$achternaam', klas = '$klas' WHERE id = '$id'";
 
         if (mysqli_query($this->conn, $sql)) {
             return "Record updated successfully";
@@ -64,6 +64,7 @@ public function login($naam, $password)
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['naam'] = $user['naam'];
             $_SESSION['email'] = $user['email'];
+            $_SESSION['role'] = $user['role'] ?? 'gebruiker';
             $_SESSION['ingelogd'] = true;
 
             return true;
@@ -82,7 +83,15 @@ public function logout()
 
     $_SESSION = [];
     session_destroy();
-    header("Location: frontend.php");
+    header("Location: index.php");
+}
+
+public function usernameExists($name)
+{
+    $name = mysqli_real_escape_string($this->conn, $name);
+    $sql = "SELECT id FROM users WHERE naam = '$name'";
+    $result = mysqli_query($this->conn, $sql);
+    return mysqli_num_rows($result) > 0;
 }
 }
 

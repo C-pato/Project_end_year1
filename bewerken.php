@@ -1,79 +1,63 @@
 <?php
+session_start();
+
 require_once 'database.php';
+require_once 'user.php';
 
-$db = new Database();
-$conn = $db->connect();
-
-$student_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $error = "";
 $success = "";
 
-if ($student_id == 0) {
-    header("Location: frontend.php");
+if (($_SESSION['role'] ?? 'gebruiker') === 'gebruiker') {
+    header("Location: index.php");
     exit;
 }
 
-// Fetch student data
-$sql = "SELECT id, voornaam, achternaam, klas FROM studenten WHERE id = $student_id";
-$result = mysqli_query($conn, $sql);
+$studenten = new Studenten();
 
-if (mysqli_num_rows($result) == 0) {
-    header("Location: frontend.php");
+$student_id = intval($_GET['id'] ?? 0);
+
+$student = $studenten->getById($student_id);
+
+if (!$student) {
+    header("Location: index.php");
     exit;
 }
 
-$student = mysqli_fetch_assoc($result);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
 
-// Handle update
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update'])) {
-    $new_id = intval($_POST['id']);
-    $voornaam = mysqli_real_escape_string($conn, $_POST['voornaam']);
-    $achternaam = mysqli_real_escape_string($conn, $_POST['achternaam']);
-    $klas = mysqli_real_escape_string($conn, $_POST['klas']);
-    
-    // Check if new ID already exists and is different from current ID
-    if ($new_id != $student_id) {
-        $check_sql = "SELECT id FROM studenten WHERE id = $new_id";
-        $check_result = mysqli_query($conn, $check_sql);
-        if (mysqli_num_rows($check_result) > 0) {
-            $error = "ID already exists!";
-        } else {
-            $update_sql = "UPDATE studenten SET id = $new_id, voornaam = '$voornaam', achternaam = '$achternaam', klas = '$klas' WHERE id = $student_id";
-            
-            if (mysqli_query($conn, $update_sql)) {
-                $success = "Student updated successfully!";
-                $student_id = $new_id;
-                $student['id'] = $new_id;
-                $student['voornaam'] = $voornaam;
-                $student['achternaam'] = $achternaam;
-                $student['klas'] = $klas;
-            } else {
-                $error = "Error updating student: " . mysqli_error($conn);
-            }
-        }
+    $newId = intval($_POST['id']);
+
+    if ($newId != $student_id && $studenten->idExists($newId)) {
+
+        $error = "ID already exists!";
+
     } else {
-        $update_sql = "UPDATE studenten SET voornaam = '$voornaam', achternaam = '$achternaam', klas = '$klas' WHERE id = $student_id";
-        
-        if (mysqli_query($conn, $update_sql)) {
+
+        $ok = $studenten->update(
+            $student_id,
+            $newId,
+            $_POST['voornaam'],
+            $_POST['achternaam'],
+            $_POST['klas']
+        );
+
+        if ($ok) {
             $success = "Student updated successfully!";
-            $student['voornaam'] = $voornaam;
-            $student['achternaam'] = $achternaam;
-            $student['klas'] = $klas;
+            $student = $studenten->getById($newId);
+            $student_id = $newId;
         } else {
-            $error = "Error updating student: " . mysqli_error($conn);
+            $error = "Update failed.";
         }
     }
 }
 
-// Handle delete
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
-    $delete_sql = "DELETE FROM studenten WHERE id = $student_id";
-    
-    if (mysqli_query($conn, $delete_sql)) {
-        header("Location: frontend.php");
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+
+    if ($studenten->delete($student_id)) {
+        header("Location: index.php");
         exit;
     } else {
-        $error = "Error deleting student: " . mysqli_error($conn);
+        $error = "Delete failed.";
     }
 }
 ?>
@@ -158,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
 
             <button
                 class="back-btn"
-                onclick="window.location='frontend.php'">
+                onclick="window.location='index.php'">
                 Back to Student List
             </button>
         </div>

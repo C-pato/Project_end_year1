@@ -7,7 +7,7 @@ $user = new user();
 if (isset($_POST['logout'])) {
     session_destroy();
     $_SESSION = [];
-    header("Location: index.php");
+    header("Location: login.php");
     exit;
 }
 ?>

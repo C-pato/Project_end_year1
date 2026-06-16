@@ -1,8 +1,35 @@
+:root {
+    --card-width-auth: 420px;
+    --card-width-board: 620px;
+    --card-padding: 28px;
+    --card-radius: 16px;
+    --text-radius: 12px;
+    --button-padding: 16px 20px;
+    --button-font: 18px;
+    --header-padding-vertical: 18px;
+    --header-padding-horizontal: 24px;
+    --footer-padding: 16px;
+    --input-radius: 12px;
+    --table-padding-vertical: 14px;
+    --table-padding-horizontal: 18px;
+    --shadow-size: 8px;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Segoe UI", sans-serif;
+}
+
+body.login-page,
+body.signup-page {
+    overflow: hidden;
+}
+
+body.login-page::-webkit-scrollbar,
+body.signup-page::-webkit-scrollbar {
+    display: none;
 }
 
 body {
@@ -16,38 +43,39 @@ body {
 }
 
 .auth-container {
-    width: 350px;
-    padding: 35px;
+    width: var(--card-width-auth);
+    padding: var(--card-padding);
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: var(--card-radius);
+    box-shadow: 0 var(--shadow-size) calc(4 * var(--shadow-size)) rgba(0,0,0,0.25);
     text-align: center;
 }
 
 .board-container {
-    width: 40%;
-    padding: 35px;
+    width: var(--card-width-board);
+    padding: var(--card-padding);
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: var(--card-radius);
+    box-shadow: 0 var(--shadow-size) calc(4 * var(--shadow-size)) rgba(0,0,0,0.25);
     text-align: center;
 }
 
 h1 {
     color: white;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
+    font-size: 32px;
 }
 
 input {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
+    padding: 16px 16px;
+    margin-bottom: 24px;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--input-radius);
     outline: none;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .site-header {
@@ -55,8 +83,8 @@ input {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 20px 30px;
-    font-size: 30px;
+    padding: var(--header-padding-vertical) var(--header-padding-horizontal);
+    font-size: 24px;
     font-weight: bold;
     color: aliceblue;
     background: rgba(0,0,0,0.15);
@@ -65,11 +93,40 @@ input {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    position: fixed;
+}
+
+.site-title {
+    text-align: center;
+}
+
+.nav-buttons {
+    position: absolute;
+    right: 24px;
+    display: flex;
+    gap: 12px;
+}
+
+.nav-btn {
+    width: auto;
+    padding: 12px 24px;
+    background: transparent;
+    color: white;
+    border: 3px solid rgba(255,255,255,0.4);
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: 0.25s;
+}
+
+.nav-btn:hover {
+    background: rgba(255,255,255,0.15);
 }
 
 .site-footer {
     width: 100%;
-    padding: 15px;
+    padding: var(--footer-padding);
     text-align: center;
     color: rgba(255,255,255,0.8);
     background: rgba(0,0,0,0.15);
@@ -80,52 +137,52 @@ input {
 }
 
 .page-center {
-    min-height: calc(100vh - 115px);
+    min-height: 620px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 90px 20px 70px;
+    padding: 88px 32px 72px;
     overflow-y: auto;
 }
 
 .page-center-auth {
-    height: calc(100vh - 115px);
+    height: 620px;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 0;
-    margin-top: 90px;
+    margin-top: 72px;
 }
 
 .error {
     display: block;
     color: #fff;
     background: rgba(255, 0, 0, 0.85);
-    border: 3px solid rgba(255, 0, 0, 0.85);
-    padding: 14px 16px;
-    margin: 16px 0 24px;
-    border-radius: 14px;
+    border: 5px solid rgba(255, 0, 0, 0.85);
+    padding: 22px 24px;
+    margin: 24px 0 38px;
+    border-radius: 22px;
     font-weight: 800;
     text-align: center;
-    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.08);
+    box-shadow: 0 0 0 5px rgba(255, 0, 0, 0.08);
 }
 
 button {
     width: 100%;
-    padding: 12px;
+    padding: var(--button-padding);
     border: none;
-    border-radius: 10px;
+    border-radius: var(--text-radius);
     cursor: pointer;
-    font-size: 16px;
+    font-size: var(--button-font);
     font-weight: bold;
     transition: 0.25s;
 }
 
 .back-btn {
-    margin-top: 10px;
+    margin-top: 12px;
     background: transparent;
     color: white;
-    border: 2px solid rgba(255,255,255,0.4);
+    border: 3px solid rgba(255,255,255,0.4);
 }
 
 .back-btn:hover {
@@ -143,8 +200,7 @@ button {
 }
 
 .signup-btn {
-    margin-top: 10px;
-
+    margin-top: 12px;
     background: white;
     color: #6a4c93;
 }
@@ -158,13 +214,13 @@ button {
     border-collapse: collapse;
     color: white;
     background: rgba(255,255,255,0.05);
-    border-radius: 15px;
+    border-radius: 24px;
     overflow: hidden;
 }
 
 .student-table th {
     background: rgba(255,255,255,0.15);
-    padding: 12px 12px 12px 24px;
+    padding: var(--table-padding-vertical) var(--table-padding-horizontal);
     text-align: left;
     position: sticky;
     top: 0;
@@ -172,8 +228,8 @@ button {
 }
 
 .student-table td {
-    padding: 12px 12px 12px 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding: var(--table-padding-vertical) var(--table-padding-horizontal);
+    border-bottom: 2px solid rgba(255,255,255,0.15);
 }
 
 .student-table tr:hover {
@@ -183,19 +239,20 @@ button {
 .success {
     color: #fff;
     background: rgba(74, 222, 128, 0.15);
-    border: 1px solid rgba(74, 222, 128, 0.5);
-    padding: 12px 14px;
-    margin-bottom: 20px;
-    border-radius: 10px;
+    border: 2px solid rgba(74, 222, 128, 0.5);
+    padding: 20px 22px;
+    margin-bottom: 32px;
+    border-radius: 16px;
     text-align: center;
 }
 
 .action-btn {
     width: auto;
-    padding: 8px 14px;
+    padding: 12px 22px;
     background: #8a5cf6;
     color: white;
-    border-radius: 8px;
+    border-radius: 16px;
+    text-decoration: none;
 }
 
 .action-btn:hover {
@@ -206,26 +263,27 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 32px;
     width: 100%;
     position: relative;
 }
 
 .student-header h1 {
     text-align: center;
+    font-size: 32px;
 }
 
 .logout-btn {
     position: absolute;
     right: 0;
     width: auto;
-    padding: 8px 16px;
+    padding: 12px 24px;
     background: transparent;
     color: white;
-    border: 2px solid rgba(255,255,255,0.4);
-    border-radius: 10px;
+    border: 3px solid rgba(255,255,255,0.4);
+    border-radius: 16px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: bold;
     transition: 0.25s;
 }
@@ -235,20 +293,20 @@ button {
 }
 
 .add-student-section {
-    margin-top: 25px;
+    margin-top: 40px;
     text-align: center;
     width: 100%;
 }
 
 .add-student-btn {
     width: 100%;
-    padding: 12px 24px;
+    padding: 1.2vh 2.4vw;
     background: transparent;
     color: white;
-    border: 2px dashed rgba(255,255,255,0.6);
-    border-radius: 10px;
+    border: 0.2vw dashed rgba(255,255,255,0.6);
+    border-radius: 1vw;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1.6vh;
     font-weight: bold;
     transition: 0.25s;
 }
